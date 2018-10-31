@@ -19,14 +19,14 @@ def download():
 
 
         if db_select() == file_name:
-            print("this file already exists.")
+            print("file already exists.#####",file_name,"#####")
             return False
         else:
             try:
                 urllib.request.urlretrieve(url,file_name)
                 db_insert_file(file_name)
-                print("file download complete.")
+                print("file download complete.#####",file_name,"#####")
                 return file_name
             except:
-                print("file couldn't be downloaded.")
+                print("file couldn't be downloaded.#####",file_name,"#####")
     return False

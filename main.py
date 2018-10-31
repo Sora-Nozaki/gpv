@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from download_task import download
 from flask import Flask, render_template, request, url_for, redirect
 import re
-from datetime import datetime 
+from datetime import datetime, timedelta
+from database_controller import db_insert_data,db_select_data,db_select
 
 
 # 自身の名称を app という名前でインスタンス化する
@@ -50,16 +51,21 @@ def main():
             # read the band as matrix
             data_matrix = band.ReadAsArray()
             data = data_matrix[grid_latitude,grid_longitude] #指定したグリッドにおけるデータ
-            data_everyhours.append(data)
+            data_everyhours.append(str(data))
 
-        date = re.search("[0-9]{10}" , file_name)
-        tdatetime = datetime.strptime(date, '%Y%m%d%H%M%S') #読み込んだデータの初期時間を求める(UTC)
+        date = int(re.search("[0-9]{10}" , file_name).group())
+        print(date)
+        print(re.search("[0-9]{10}" , file_name))
+        print(re.search("[0-9]{10}" , file_name).group())
+        print(type(re.search("[0-9]{10}" , file_name).group()))
+        grid = str(grid_latitude) + "," + str(grid_longitude)
+        grid_data = ','.join(data_everyhours)
+        db_insert_data(grid_data,date,grid)
+
+
 
 
         plt.plot(range(len(data_everyhours)),data_everyhours)
-
-        plt.savefig('%s.png'%file_name)
-
         plt.cla()
 
 @app.route('/')
@@ -73,6 +79,17 @@ def index():
 @app.route('/kuala-gpv', methods=['GET','POST'])
 def post():
     title = "データ一覧"
+    # recent_file = db_select()
+    # date = re.search("[0-9]{10}" , recent_file)
+    # tdatetime = datetime.strptime(date.group(), '%4Y%2m%2d%2h') #読み込んだデータの初期時間を求める(UTC)
+    # date_time = (tdatetime + timedelta(hours=9))
+    # date_times = []
+    # for i in range(15): #hours_agoを使えそう...
+    #     every_date_time = (date_time + timedelta(hours=i).strftime("%m/%d %h:00") # 11/1 6:00
+    #     date_times.append(every_date_time)
+
+
+
     if request.method == 'POST' and request.form['passwd'] == "kuala":
         return render_template('data.html',title=title)
     else:

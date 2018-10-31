@@ -3,7 +3,7 @@ import time
 from download_task import download
 from main import main
 
-schedule.every(1).hours.do(main) #一時間ごとにダウンロードを実行する
+schedule.every(1/6).minutes.do(main) #一時間ごとにダウンロードを実行する
 
 
 while True:
