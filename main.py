@@ -79,19 +79,28 @@ def index():
 @app.route('/kuala-gpv', methods=['GET','POST'])
 def post():
     title = "データ一覧"
-    # recent_file = db_select()
-    # date = re.search("[0-9]{10}" , recent_file)
-    # tdatetime = datetime.strptime(date.group(), '%4Y%2m%2d%2h') #読み込んだデータの初期時間を求める(UTC)
-    # date_time = (tdatetime + timedelta(hours=9))
-    # date_times = []
-    # for i in range(15): #hours_agoを使えそう...
-    #     every_date_time = (date_time + timedelta(hours=i).strftime("%m/%d %h:00") # 11/1 6:00
-    #     date_times.append(every_date_time)
+    recent_file = db_select()
+    date = re.search("[0-9]{10}" , recent_file)
 
+    tdatatime = datetime.strptime(date.group(), '%Y%m%d%H') #読み込んだデータの初期時間を求める(UTC)
 
+    data_time = (tdatatime + timedelta(hours=9))
+    data_times = []
+    for i in range(15): #hours_agoを使えそう...
+        every_data_time = str((data_time + timedelta(hours=i)).strftime('%m/%d %H:00')) # 11/1 6:00
+        print(type(every_data_time))
+        data_times.append(every_data_time)
+
+    recent_all_data = db_select_data(int(date.group()))
+    cloud_cover = recent_all_data[0][0]
+    grid_data = recent_all_data[0][1]
+
+    test = ["a","b","c"]
+
+    print(data_times,cloud_cover,grid_data)
 
     if request.method == 'POST' and request.form['passwd'] == "kuala":
-        return render_template('data.html',title=title)
+        return render_template('data.html',title=title,cloud_cover=cloud_cover,data_times=data_times)
     else:
         return redirect(url_for('index'))
 
